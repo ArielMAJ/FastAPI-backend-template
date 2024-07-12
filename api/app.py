@@ -37,10 +37,10 @@ def get_app() -> FastAPI:
         SQLAlchemyMiddleware,
         db_url=Config.DATABASE.POSTGRES_URI,
         engine_args={
-            "echo": True,
-            "pool_pre_ping": True,
-            "pool_size": 5,
-            "max_overflow": 10,
+            "echo": Config.DATABASE.POSTGRES_ECHO,
+            "pool_pre_ping": Config.DATABASE.POOL_PRE_PING,
+            "pool_size": Config.DATABASE.POOL_SIZE,
+            "max_overflow": Config.DATABASE.MAX_OVERFLOW,
         },
         commit_on_exit=True,
     )

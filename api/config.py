@@ -20,6 +20,9 @@ class DatabaseConfig:
         f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}"
     )
     POSTGRES_ECHO = os.getenv("POSTGRES_ECHO", "false").lower() == "true"
+    POOL_PRE_PING = os.getenv("POOL_PRE_PING", True)
+    POOL_SIZE = int(os.getenv("POOL_SIZE", 5))
+    MAX_OVERFLOW = int(os.getenv("MAX_OVERFLOW", 10))
 
 
 class Config:
