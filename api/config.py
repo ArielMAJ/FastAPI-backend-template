@@ -5,6 +5,23 @@ Application's and its environment's configuration.
 import os
 
 
+class DatabaseConfig:
+    """Database configuration."""
+
+    DATABASE_CONNECTOR = os.getenv("DATABASE_CONNECTOR", "postgresql+asyncpg")
+    POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+    POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+    POSTGRES_DB_NAME = os.getenv("POSTGRES_DB_NAME", "postgres")
+    POSTGRES_URI = (
+        f"{DATABASE_CONNECTOR}:"
+        f"//{POSTGRES_USER}:{POSTGRES_PASSWORD}"
+        f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}"
+    )
+    POSTGRES_ECHO = os.getenv("POSTGRES_ECHO", "false").lower() == "true"
+
+
 class Config:
     """Base configuration."""
 
@@ -19,6 +36,8 @@ class Config:
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
     APPLICATION_ROOT = os.getenv("APPLICATION_ROOT", "")
+
+    DATABASE: DatabaseConfig = DatabaseConfig()
 
 
 class TestConfig(Config):

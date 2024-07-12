@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-backend-template"
-version = "0.1.0"
+version = "0.2.0"
 description = "A FastAPI backend template."
 authors = ["ArielMAJ <ariel.maj@hotmail.com>"]
 readme = "README.md"
@@ -13,6 +13,11 @@ uvicorn = {extras = ["standard"], version = "^0.27.1"}
 loguru = "^0.7.2"
 httpx = "^0.26.0"
 fastapi-cache2 = "^0.2.1"
+alembic = "^1.13.2"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.31"}
+asyncpg = "^0.29.0"
+fastapi-async-sqlalchemy = "^0.6.1"
+psycopg = "^3.2.1"
 
 
 [tool.poetry.group.dev.dependencies]
