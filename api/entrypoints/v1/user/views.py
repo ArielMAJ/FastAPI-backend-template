@@ -1,3 +1,5 @@
+from typing import List
+
 from api.database.models.users import User
 from api.schemas.user import UserCreate
 from fastapi import APIRouter
@@ -6,21 +8,18 @@ from loguru import logger
 router = APIRouter()
 
 
-@router.get("/")  # , response_model=list[User])
-async def get_users():
+@router.get("/", response_model=List[UserCreate])
+async def get_users() -> List[UserCreate]:
     """
     Retrieve a list of all users.
 
     Returns:
         List[User]: A list of User objects.
     """
-    # user = User(name="John Doe", email="", password="")
-    # result = await db.session.execute(text("SELECT * FROM users"))
-    # return result.fetchall()
     return await User.get_all()
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=UserCreate)
 async def get_user(user_id: int):
     """
     Retrieve a user by ID.
@@ -34,7 +33,7 @@ async def get_user(user_id: int):
     return await User.get_by_id(user_id)
 
 
-@router.post("/")
+@router.post("/", response_model=UserCreate)
 async def create_user(user: UserCreate):
     """
     Create a new user.
@@ -49,7 +48,7 @@ async def create_user(user: UserCreate):
     return await User.new(**user.model_dump())
 
 
-@router.put("/{user_id}")
+@router.put("/{user_id}", response_model=None)
 async def update_user(user_id: int, user: UserCreate):
     """
     Update a user by ID.
