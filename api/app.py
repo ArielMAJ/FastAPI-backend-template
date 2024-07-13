@@ -35,13 +35,8 @@ def get_app() -> FastAPI:
     )
     _app.add_middleware(
         SQLAlchemyMiddleware,
-        db_url=Config.DATABASE.POSTGRES_URI,
-        engine_args={
-            "echo": Config.DATABASE.POSTGRES_ECHO,
-            "pool_pre_ping": Config.DATABASE.POOL_PRE_PING,
-            "pool_size": Config.DATABASE.POOL_SIZE,
-            "max_overflow": Config.DATABASE.MAX_OVERFLOW,
-        },
+        db_url=Config.DATABASE.DB_URL,
+        engine_args=Config.DATABASE.ENGINE_ARGS,
         commit_on_exit=True,
     )
     _app.include_router(router=api_router)
