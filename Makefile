@@ -3,7 +3,6 @@ ifneq ("$(wildcard .env)","")
 	export
 endif
 
-
 .PHONY: run
 run: ## Run the project.
 	poetry run python -m api
@@ -18,6 +17,30 @@ install: ## Install Python requirements.
 .PHONY: test
 test: ## Run tests.
 	ENVIRONMENT=test poetry run pytest --cov
+
+.PHONY: up-database
+up-database: ## Start database container.
+	docker compose up -d postgres --force-recreate
+
+.PHONY: down
+down: ## Stop all containers.
+	docker compose down
+
+.PHONY: migrate
+migrate: ## Run database migrations.
+	poetry run alembic upgrade head
+
+.PHONY: revision
+revision: ## Create a new database migration.
+	poetry run alembic revision --autogenerate -m "$(MESSAGE)"
+
+.PHONY: docker-rm
+docker-rm: ## Remove all containers.
+	docker rm -f $$(docker ps -a -q)
+
+.PHONY: docker-rmi
+docker-rmi: ## Remove all images.
+	docker rmi -f $$(docker images -q)
 
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit checks.
