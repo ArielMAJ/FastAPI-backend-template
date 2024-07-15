@@ -1,5 +1,5 @@
-from api.entrypoints.v1.random_number.schema import RandomResponse
-from api.services.random_number_service import RandomNumberService
+from api.schemas.random_number import RandomResponse
+from api.services.random_number_service import RandomResponseService
 from fastapi import APIRouter
 from fastapi_cache.decorator import cache
 
@@ -14,4 +14,4 @@ async def random_number():
 
     :returns: random number to user.
     """
-    return await RandomNumberService.get_random_number()
+    return await RandomResponseService.get_random_number()

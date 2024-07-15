@@ -1,14 +1,14 @@
 """Unit tests for the random number service."""
 
 import pytest
-from api.entrypoints.v1.random_number.schema import RandomResponse
-from api.services.random_number_service import RandomNumberService
+from api.schemas.random_number import RandomResponse
+from api.services.random_number_service import RandomResponseService
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "random_return_value", [0.1, 0.2, 0.3]
 )  # Specify different sleep times here
+@pytest.mark.anyio
 async def test_root_response_GET(client, mocker, random_return_value):
     """Test the endpoint."""
     mock_sleep = mocker.patch("asyncio.sleep")
@@ -17,7 +17,7 @@ async def test_root_response_GET(client, mocker, random_return_value):
     mock_random = mocker.patch("api.services.random_number_service.random")
     mock_random.return_value = random_return_value
 
-    response = await RandomNumberService.get_random_number()
+    response = await RandomResponseService.get_random_number()
 
     assert isinstance(response, RandomResponse)
     assert response == RandomResponse(message=random_return_value * 5)

@@ -1,9 +1,8 @@
 from typing import List
 
-from api.database.models.users import User
 from api.schemas.user import UserCreate
+from api.services.user_service import UserService
 from fastapi import APIRouter
-from loguru import logger
 
 router = APIRouter()
 
@@ -16,7 +15,7 @@ async def get_users() -> List[UserCreate]:
     Returns:
         List[User]: A list of User objects.
     """
-    return await User.get_all()
+    return await UserService.get_all()
 
 
 @router.get("/{user_id}", response_model=UserCreate)
@@ -30,7 +29,7 @@ async def get_user(user_id: int):
     Returns:
         User: The User object.
     """
-    return await User.get_by_id(user_id)
+    return await UserService.get_user(user_id)
 
 
 @router.post("/", response_model=UserCreate)
@@ -44,8 +43,7 @@ async def create_user(user: UserCreate):
     Returns:
         User: The created User object.
     """
-    logger.info(user.model_dump())
-    return await User.new(**user.model_dump())
+    return await UserService.create_user(user)
 
 
 @router.put("/{user_id}", response_model=None)
@@ -60,7 +58,7 @@ async def update_user(user_id: int, user: UserCreate):
     Returns:
         User: The updated User object.
     """
-    return await User.update_by_id(user_id, **user.model_dump())
+    return await UserService.update_user(user_id, user)
 
 
 @router.delete("/{user_id}")
@@ -71,5 +69,4 @@ async def delete_user(user_id: int):
     Args:
         user_id (int): The ID of the user.
     """
-    await User.delete_by_id(user_id)
-    return {"message": "User deleted successfully"}
+    return await UserService.delete_user(user_id)
