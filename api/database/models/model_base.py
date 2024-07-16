@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, List
+from typing import Any, List, Union
 
 from fastapi_async_sqlalchemy import db
 from sqlalchemy import DateTime, MetaData, select
@@ -30,6 +30,8 @@ class ModelBase(DeclarativeBase):
     async def new(cls, **kwargs) -> Self:
         obj: Self = cls(**kwargs)
         await obj.save()
+        await db.session.flush()
+        await db.session.refresh(obj)
         return obj
 
     @classmethod
@@ -55,7 +57,7 @@ class ModelBase(DeclarativeBase):
         return result.scalars().first()
 
     @classmethod
-    async def get_by_id(cls, id: int) -> Self:
+    async def get_by_id(cls, id: int) -> Union[Self, None]:
         return await cls.get(cls.id == id)
 
     async def save(self) -> None:
@@ -66,15 +68,5 @@ class ModelBase(DeclarativeBase):
             setattr(self, attr, value)
         await self.save()
 
-    @classmethod
-    async def update_by_id(cls, id: int, **kwargs):
-        obj = await cls.get_by_id(id)
-        await obj.update(**kwargs)
-
     async def delete(self):
         await db.session.delete(self)
-
-    @classmethod
-    async def delete_by_id(cls, id: int):
-        obj = await cls.get_by_id(id)
-        await obj.delete()
