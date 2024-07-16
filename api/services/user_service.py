@@ -1,13 +1,13 @@
-from typing import List
+from typing import List, Union
 
 from api.database.models.users import User
+from api.exceptions.http_exceptions import NotFoundException
 from api.schemas.user import UserCreate
 from loguru import logger
 
 
 class UserService:
-    @staticmethod
-    async def get_all() -> List[UserCreate]:
+    async def get_all(self) -> List[User]:
         """
         Retrieve a list of all users.
 
@@ -16,8 +16,7 @@ class UserService:
         """
         return await User.get_all()
 
-    @staticmethod
-    async def get_user(user_id: int):
+    async def get_user(self, user_id: int) -> User:
         """
         Retrieve a user by ID.
 
@@ -27,10 +26,12 @@ class UserService:
         Returns:
             User: The User object.
         """
-        return await User.get_by_id(user_id)
+        user: Union[User, None] = await User.get_by_id(user_id)
+        if not user:
+            raise NotFoundException(User)
+        return user
 
-    @staticmethod
-    async def create_user(user: UserCreate):
+    async def create_user(self, user: UserCreate) -> User:
         """
         Create a new user.
 
@@ -43,8 +44,7 @@ class UserService:
         logger.info(user.model_dump())
         return await User.new(**user.model_dump())
 
-    @staticmethod
-    async def update_user(user_id: int, user: UserCreate):
+    async def update_user(self, user_id: int, updated_user: UserCreate):
         """
         Update a user by ID.
 
@@ -55,15 +55,17 @@ class UserService:
         Returns:
             User: The updated User object.
         """
-        return await User.update_by_id(user_id, **user.model_dump())
+        user: User = await self.get_user(user_id)
+        return await user.update(**updated_user.model_dump())
 
-    @staticmethod
-    async def delete_user(user_id: int):
+    async def delete_user(self, user_id: int):
         """
         Delete a user by ID.
 
         Args:
             user_id (int): The ID of the user.
         """
-        await User.delete_by_id(user_id)
+
+        user: User = await self.get_user(user_id)
+        await user.delete()
         return {"message": "User deleted successfully"}
