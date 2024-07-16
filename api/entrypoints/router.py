@@ -1,6 +1,10 @@
-from api.entrypoints import monitoring, v1
+from api.entrypoints import monitoring, random_response, root_response, user
 from fastapi.routing import APIRouter
 
-api_router = APIRouter()
-api_router.include_router(monitoring.router)
-api_router.include_router(v1.router, prefix="/v1", tags=["v1"])
+router = APIRouter()
+router.include_router(monitoring.router, tags=["Monitoring"])
+router.include_router(
+    random_response.router, prefix="/random_number", tags=["Random Number"]
+)
+router.include_router(root_response.router, prefix="", tags=["Root Response"])
+router.include_router(user.router, prefix="/user", tags=["User"])

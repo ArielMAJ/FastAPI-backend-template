@@ -6,11 +6,11 @@ Random number service class.
 import asyncio
 from random import random
 
-from api.entrypoints.v1.random_number.schema import RandomResponse
+from api.schemas.random_number import RandomResponse
 from loguru import logger
 
 
-class RandomNumberService:
+class RandomResponseService:
     """
     Random number service class.
     """

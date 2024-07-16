@@ -1,7 +1,7 @@
 """Unit tests for the root endpoint service."""
 
 import pytest
-from api.entrypoints.v1.root_response.schema import RootResponse
+from api.schemas.root_response import RootResponse
 from api.services.root_response_service import RootResponseService
 
 
