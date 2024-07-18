@@ -1,13 +1,18 @@
-from typing import List
+from typing import Annotated, List
 
+from api.database.models.users import User
 from api.schemas.user import UserCreate, UserOut
+from api.services.auth import AuthService
 from api.services.user_service import UserService
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
+authenticated_router = APIRouter(
+    dependencies=[Depends(AuthService.get_current_active_user)]
+)
 
 
-@router.get("/", response_model=List[UserOut])
+@authenticated_router.get("/", response_model=List[UserOut])
 async def get_users() -> List[UserOut]:
     """
     Retrieve a list of all users.
@@ -18,7 +23,17 @@ async def get_users() -> List[UserOut]:
     return await UserService().get_all()
 
 
-@router.get("/{user_id}", response_model=UserOut)
+@authenticated_router.get("/me", response_model=UserOut)
+async def read_user_me(
+    current_user: Annotated[User, Depends(AuthService.get_current_active_user)]
+):
+    """
+    Retrieve the currently authenticated user by Bearer token.
+    """
+    return current_user
+
+
+@authenticated_router.get("/{user_id}", response_model=UserOut)
 async def get_user(user_id: int) -> UserOut:
     """
     Retrieve a user by ID.
@@ -46,7 +61,7 @@ async def create_user(user: UserCreate):
     return await UserService().create_user(user)
 
 
-@router.put("/{user_id}", response_model=None)
+@authenticated_router.put("/{user_id}", response_model=None)
 async def update_user(user_id: int, user: UserCreate) -> None:
     """
     Update a user by ID.
@@ -61,7 +76,7 @@ async def update_user(user_id: int, user: UserCreate) -> None:
     return await UserService().update_user(user_id, user)
 
 
-@router.delete("/{user_id}", response_model=None)
+@authenticated_router.delete("/{user_id}", response_model=None)
 async def delete_user(user_id: int) -> None:
     """
     Delete a user by ID.

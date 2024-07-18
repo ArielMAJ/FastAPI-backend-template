@@ -11,7 +11,7 @@ class BaseDBSchema(BaseModel):
     deleted_at: Optional[datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
     @field_serializer("created_at", "updated_at", "deleted_at")
     def serialize_dt(self, dt: Optional[datetime]):
