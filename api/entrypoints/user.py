@@ -23,7 +23,7 @@ async def get_users() -> List[UserOut]:
     return await UserService().get_all()
 
 
-@authenticated_router.get("/me", response_model=UserOut)
+@router.get("/me", response_model=UserOut)
 async def read_user_me(
     current_user: Annotated[User, Depends(AuthService.get_current_active_user)]
 ):

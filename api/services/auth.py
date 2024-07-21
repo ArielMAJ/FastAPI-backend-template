@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 
 import jwt
+from api.config import Config
 from api.database.models.users import User
 from api.exceptions.http_exceptions import CredentialsException
 from api.schemas.auth import TokenData
@@ -11,11 +12,6 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
-
-
-SECRET_KEY = "ef555b4c8637c33623fe8e91ba7256725e7e2a1bcc75fe84acb189bcaa6c8693"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 class AuthService:
@@ -42,16 +38,20 @@ class AuthService:
     ):
         to_encode = data.copy()
         expires_at = datetime.now(timezone.utc) + timedelta(
-            minutes=expires_delta_in_minutes or ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=expires_delta_in_minutes or Config.AUTH.ACCESS_TOKEN_EXPIRE_MINUTES
         )
         to_encode.update({"exp": expires_at})
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        encoded_jwt = jwt.encode(
+            to_encode, Config.AUTH.SECRET_KEY, algorithm=Config.AUTH.ALGORITHM
+        )
         return encoded_jwt, expires_at
 
     # @staticmethod
     async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = jwt.decode(
+                token, Config.AUTH.SECRET_KEY, algorithms=[Config.AUTH.ALGORITHM]
+            )
             username: Union[str, None] = payload.get("sub")
             if username is None:
                 raise CredentialsException()
