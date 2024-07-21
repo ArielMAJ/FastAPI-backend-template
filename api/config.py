@@ -58,6 +58,12 @@ class DatabaseConfig:
     }
 
 
+class AuthConfig:
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
+    ALGORITHM: str = os.getenv("ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+
+
 class Config:
     """Base configuration."""
 
@@ -74,6 +80,7 @@ class Config:
     APPLICATION_ROOT = os.getenv("APPLICATION_ROOT", "")
 
     DATABASE: DatabaseConfig = DatabaseConfig()
+    AUTH: AuthConfig = AuthConfig()
 
 
 class TestConfig(Config):

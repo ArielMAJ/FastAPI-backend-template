@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-backend-template"
-version = "0.3.0"
+version = "0.4.0"
 description = "A FastAPI backend template."
 authors = ["ArielMAJ <ariel.maj@hotmail.com>"]
 readme = "README.md"
@@ -18,6 +18,9 @@ sqlalchemy = {extras = ["asyncio"], version = "^2.0.31"}
 asyncpg = "^0.29.0"
 fastapi-async-sqlalchemy = "^0.6.1"
 psycopg = "^3.2.1"
+pyjwt = "^2.8.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.9"
 
 
 [tool.poetry.group.dev.dependencies]
