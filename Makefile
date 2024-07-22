@@ -8,14 +8,14 @@ run: ## Run the project.
 	poetry run python -m api
 
 .PHONY: install
-install: ## Install Python requirements.
+install: ## Install Python package dependencies.
 	python -m pip install --upgrade pip setuptools wheel poetry
 	poetry lock
 	poetry install --no-root
 	poetry run pre-commit install
 
 .PHONY: test
-test: ## Run tests.
+test: ## Run automated tests.
 	ENVIRONMENT=test poetry run pytest --cov
 
 .PHONY: up-database
@@ -26,28 +26,36 @@ up-database: ## Start database container.
 down: ## Stop all containers.
 	docker compose down
 
+.PHONY: revision
+revision: ## Create a new database revision following the repository's models.
+	poetry run alembic revision --autogenerate -m "$(MESSAGE)"
+
 .PHONY: migrate
 migrate: ## Run database migrations.
 	poetry run alembic upgrade head
 
-.PHONY: revision
-revision: ## Create a new database migration.
-	poetry run alembic revision --autogenerate -m "$(MESSAGE)"
+.PHONY: downgrade
+downgrade: ## Undo last database migration.
+	poetry run alembic downgrade -1
 
 .PHONY: docker-rm
-docker-rm: ## Remove all containers.
+docker-rm: ## Remove all docker containers.
 	docker rm -f $$(docker ps -a -q)
 
 .PHONY: docker-rmi
-docker-rmi: ## Remove all images.
+docker-rmi: ## Remove all downloaded docker images.
 	docker rmi -f $$(docker images -q)
+
+.PHONY: export-requirements
+export-requirements: ## Export poetry managed packages to a requirements.txt (needed by Vercel).
+	poetry export -f requirements.txt --output requirements.txt --without-hashes
 
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit checks.
 	poetry run pre-commit run --config ./.pre-commit-config.yaml
 
 .PHONY: patch
-patch: ## Bump project version to next patch (bugfix release/chores).
+patch: ## Bump project version to next patch (bugfix release).
 	poetry version patch
 
 .PHONY: minor
