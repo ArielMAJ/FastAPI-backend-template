@@ -1,5 +1,6 @@
-from api.entrypoints import auth, monitoring, random_response, root_response, user
 from fastapi.routing import APIRouter
+
+from src.entrypoints import auth, monitoring, random_response, root_response, user
 
 user.router.include_router(user.authenticated_router)
 

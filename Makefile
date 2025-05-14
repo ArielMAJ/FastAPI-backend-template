@@ -1,3 +1,6 @@
+CONTAINER_ENGINE := $(shell which podman || which docker)
+COMPOSE := $(CONTAINER_ENGINE) compose
+
 ifneq ("$(wildcard .env)","")
 	include .env
 	export
@@ -5,7 +8,7 @@ endif
 
 .PHONY: run
 run: ## Run the project.
-	poetry run python -m api
+	poetry run python -m src.main
 
 .PHONY: install
 install: ## Install Python package dependencies.
@@ -20,11 +23,11 @@ test: ## Run automated tests.
 
 .PHONY: up-database
 up-database: ## Start database container.
-	docker compose up -d postgres --force-recreate
+	$(COMPOSE) up -d postgres --force-recreate
 
 .PHONY: down
 down: ## Stop all containers.
-	docker compose down
+	$(COMPOSE) down
 
 .PHONY: revision
 revision: ## Create a new database revision following the repository's models.
@@ -38,13 +41,13 @@ migrate: ## Run database migrations.
 downgrade: ## Undo last database migration.
 	poetry run alembic downgrade -1
 
-.PHONY: docker-rm
-docker-rm: ## Remove all docker containers.
-	docker rm -f $$(docker ps -a -q)
+.PHONY: remove-containers
+remove-containers: ## Remove all containers.
+	$(CONTAINER_ENGINE) rm -f $$($(CONTAINER_ENGINE) ps -a -q)
 
-.PHONY: docker-rmi
-docker-rmi: ## Remove all downloaded docker images.
-	docker rmi -f $$(docker images -q)
+.PHONY: remove-container-images
+remove-container-images: ## Remove all downloaded container images.
+	$(CONTAINER_ENGINE) rmi -f $$($(CONTAINER_ENGINE) images -q)
 
 .PHONY: export-requirements
 export-requirements: ## Export poetry managed packages to a requirements.txt (needed by Vercel).
@@ -61,6 +64,10 @@ patch: ## Bump project version to next patch (bugfix release).
 .PHONY: minor
 minor: ## Bump project version to next minor (feature release).
 	poetry version minor
+
+.PHONY: major
+major: ## Bump project version to next major (breaking change).
+	poetry version major
 
 .PHONY: clean
 clean: ## Clean project's temporary files.

@@ -13,7 +13,7 @@ async def test_root_response_GET(client: AsyncClient, mocker, random_return_valu
     mock_sleep = mocker.patch("asyncio.sleep")
     mock_sleep.side_effect = lambda *args, **kwargs: None
 
-    mock_random = mocker.patch("api.services.random_number_service.random")
+    mock_random = mocker.patch("src.utils.random_util.random")
     mock_random.return_value = random_return_value
 
     response = await client.get("/random_number/")

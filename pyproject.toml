@@ -1,43 +1,44 @@
 [tool.poetry]
 name = "fastapi-backend-template"
-version = "0.4.1"
+version = "1.0.0"
 description = "A FastAPI backend template."
 authors = ["ArielMAJ <ariel.maj@hotmail.com>"]
 readme = "README.md"
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-fastapi = "^0.109.2"
-uvicorn = {extras = ["standard"], version = "^0.27.1"}
-loguru = "^0.7.2"
-httpx = "^0.26.0"
-fastapi-cache2 = "^0.2.1"
-alembic = "^1.13.2"
-sqlalchemy = {extras = ["asyncio"], version = "^2.0.31"}
-asyncpg = "^0.29.0"
+python = "^3.12"
+fastapi = "^0.115.12"
+uvicorn = {extras = ["standard"], version = "^0.34.2"}
+loguru = "^0.7.3"
+httpx = "^0.28.1"
+fastapi-cache2 = "^0.2.2"
+alembic = "^1.15.2"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.40"}
+asyncpg = "^0.30.0"
 fastapi-async-sqlalchemy = "^0.6.1"
-psycopg = "^3.2.1"
-pyjwt = "^2.8.0"
+psycopg = "^3.2.9"
+pyjwt = "^2.10.1"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-python-multipart = "^0.0.9"
+python-multipart = "^0.0.20"
+pydantic = {extras = ["email"], version = "^2.11.4"}
 
 
 [tool.poetry.group.dev.dependencies]
 poetry-plugin-export = "^1.6.0"
-pre-commit = "^3.6.0"
-pytest = "^8.0.1"
-pytest-cov = "^4.1.0"
-coverage = "^7.4.1"
-pytest-asyncio = "^0.23.5"
-pytest-mock = "^3.12.0"
+pre-commit = "^4.2.0"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+coverage = "^7.8.0"
+pytest-asyncio = "^0.26.0"
+pytest-mock = "^3.14.0"
 
 [tool.coverage.run]
 branch=true
-source = ["api"]
+source = ["src"]
 omit = [
-    "api/__main__.py",
-    "api/config.py",
+    "src/main.py",
+    "src/config.py",
 ]
 
 [build-system]
