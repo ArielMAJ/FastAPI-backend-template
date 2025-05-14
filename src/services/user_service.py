@@ -1,9 +1,13 @@
 from typing import List, Union
 
-from api.database.models.users import User
-from api.exceptions.http_exceptions import NotFoundException
-from api.schemas.user import UserCreate
 from loguru import logger
+
+from src.database.models.users import User
+from src.exceptions.http_exceptions import (
+    NotFoundException,
+    UserAlreadyRegistereException,
+)
+from src.schemas.user import UserCreate
 
 
 class UserService:
@@ -42,6 +46,8 @@ class UserService:
             User: The created User object.
         """
         logger.info(user.model_dump())
+        if await User.get_by_email(user.email):
+            raise UserAlreadyRegistereException(user.email)
         return await User.new(**user.model_dump())
 
     async def update_user(self, user_id: int, updated_user: UserCreate):

@@ -1,8 +1,9 @@
 """Unit tests for the random number service."""
 
 import pytest
-from api.schemas.random_number import RandomResponse
-from api.services.random_number_service import RandomResponseService
+
+from src.schemas.random_number import RandomResponse
+from src.services.random_number_service import RandomResponseService
 
 
 @pytest.mark.parametrize(
@@ -14,7 +15,7 @@ async def test_root_response_GET(client, mocker, random_return_value):
     mock_sleep = mocker.patch("asyncio.sleep")
     mock_sleep.side_effect = lambda *args, **kwargs: None
 
-    mock_random = mocker.patch("api.services.random_number_service.random")
+    mock_random = mocker.patch("src.utils.random_util.random")
     mock_random.return_value = random_return_value
 
     response = await RandomResponseService.get_random_number()

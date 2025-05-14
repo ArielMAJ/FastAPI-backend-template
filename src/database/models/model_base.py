@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+import datetime
 from typing import Any, List, Union
 
 from fastapi_async_sqlalchemy import db
@@ -18,13 +18,20 @@ class ModelBase(DeclarativeBase):
     session: AsyncSession
 
     id: Mapped[int] = mapped_column(nullable=False, primary_key=True, index=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(), default=datetime.utcnow(), nullable=False
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=datetime.datetime.now(datetime.UTC),
+        nullable=False,
     )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(), default=datetime.utcnow(), nullable=False, onupdate=datetime.utcnow
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=datetime.datetime.now(datetime.UTC),
+        nullable=False,
+        onupdate=datetime.datetime.now(datetime.UTC),
     )
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+    deleted_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     @classmethod
     async def new(cls, **kwargs) -> Self:

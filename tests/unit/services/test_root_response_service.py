@@ -1,8 +1,9 @@
 """Unit tests for the root endpoint service."""
 
 import pytest
-from api.schemas.root_response import RootResponse
-from api.services.root_response_service import RootResponseService
+
+from src.schemas.root_response import RootResponse
+from src.services.root_response_service import RootResponseService
 
 
 @pytest.mark.asyncio
@@ -14,7 +15,7 @@ async def test_root_response_service(mocker, random_return_value):
     mock_sleep = mocker.patch("asyncio.sleep")
     mock_sleep.side_effect = lambda *args, **kwargs: None
 
-    mock_random = mocker.patch("api.services.root_response_service.random")
+    mock_random = mocker.patch("src.utils.random_util.random")
     mock_random.return_value = random_return_value
 
     response = await RootResponseService.get_root_response()
