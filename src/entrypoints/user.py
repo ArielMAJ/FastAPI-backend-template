@@ -1,10 +1,11 @@
 from typing import Annotated, List
 
-from api.database.models.users import User
-from api.schemas.user import UserCreate, UserOut
-from api.services.auth import AuthService
-from api.services.user_service import UserService
 from fastapi import APIRouter, Depends
+
+from src.database.models.users import User
+from src.schemas.user import UserCreate, UserOut
+from src.services.auth import AuthService
+from src.services.user_service import UserService
 
 router = APIRouter()
 authenticated_router = APIRouter(

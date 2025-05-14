@@ -1,11 +1,12 @@
 from typing import Annotated, Union
 
-from api.database.models.users import User
-from api.exceptions.http_exceptions import CredentialsException
-from api.schemas.auth import Token
-from api.services.auth import AuthService
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+from src.database.models.users import User
+from src.exceptions.http_exceptions import CredentialsException
+from src.schemas.auth import Token
+from src.services.auth import AuthService
 
 router = APIRouter()
 

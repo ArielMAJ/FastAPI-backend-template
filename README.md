@@ -113,13 +113,13 @@ make pre-commit
 
 For changes to the database, you can follow these steps:
 
-1. Make changes to the database models in `api/database/models`.
-2. Make sure new models are imported in `api/database/__init__.py`.
+1. Make changes to the database models in `src/database/models`.
+2. Make sure new models are imported in `src/database/__init__.py`.
 3. Create a new revision:
    ```bash
    make revision
    ```
-4. Check the new revision file created in `api/database/alembic/versions` and make sure it reflects the changes you expect.
+4. Check the new revision file created in `src/database/alembic/versions` and make sure it reflects the changes you expect.
 5. Apply the migration to your database (the database needs to be running and available):
    ```bash
    make migrate
