@@ -16,3 +16,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Union[str, None] = None
+
+
+class VerifyTokenResponse(BaseModel):
+    valid: bool
+    reason: str | None = None
