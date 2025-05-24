@@ -37,7 +37,7 @@ class UserService:
             raise NotFoundException(User)
         return user
 
-    async def create_user_default_user(self, user: UserCreate) -> User:
+    async def create_default_user(self, user: UserCreate) -> User:
         """
         Create a new user.
 

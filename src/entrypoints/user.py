@@ -60,7 +60,7 @@ async def get_user(
 
 
 @router.post("/register", response_model=UserOut)
-async def create_user_default_user(user: UserCreate):
+async def create_default_user(user: UserCreate):
     """
     Create a new default user.
 
@@ -70,7 +70,7 @@ async def create_user_default_user(user: UserCreate):
     Returns:
         User: The created User object.
     """
-    return await UserService().create_user_default_user(user)
+    return await UserService().create_default_user(user)
 
 
 @router.put("/{user_id}", response_model=None)
