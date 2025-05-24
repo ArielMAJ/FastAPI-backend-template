@@ -2,12 +2,14 @@ from typing import List, Union
 
 from loguru import logger
 
+from src.database.models.user_types import UserType
 from src.database.models.users import User
 from src.exceptions.http_exceptions import (
     NotFoundException,
     UserAlreadyRegistereException,
 )
 from src.schemas.user import UserCreate
+from src.utils.enums import UserTypeEnum
 
 
 class UserService:
@@ -35,7 +37,7 @@ class UserService:
             raise NotFoundException(User)
         return user
 
-    async def create_user(self, user: UserCreate) -> User:
+    async def create_user_default_user(self, user: UserCreate) -> User:
         """
         Create a new user.
 
@@ -45,10 +47,14 @@ class UserService:
         Returns:
             User: The created User object.
         """
-        logger.info(user.model_dump())
+        logger.info(f"Starting create user request for: {user.name=}; {user.email=}")
         if await User.get_by_email(user.email):
             raise UserAlreadyRegistereException(user.email)
-        return await User.new(**user.model_dump())
+        user_type: UserType = await UserType.get_by_title(UserTypeEnum.USER)
+        if not user_type:
+            raise NotFoundException(UserType)
+        logger.info(f"{user_type.id=}; {user_type.title=}; {user_type.description=}")
+        return await User.new(user_type_id=user_type.id, **user.model_dump())
 
     async def update_user(self, user_id: int, updated_user: UserCreate):
         """

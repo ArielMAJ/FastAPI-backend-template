@@ -1,7 +1,8 @@
 from pydantic import BaseModel, EmailStr, Field, field_serializer, field_validator
 
 from src.schemas.base_db_schema import BaseDBSchema
-from src.services.auth import AuthService
+from src.schemas.user_type import UserTypeOut
+from src.utils.auth_util import get_password_hash
 
 
 class UserCreate(BaseModel):
@@ -32,7 +33,7 @@ class UserCreate(BaseModel):
 
     @field_serializer("password")
     def hash_password(self, password: str) -> str:
-        return AuthService.get_password_hash(password)
+        return get_password_hash(password)
 
     @field_validator("password", mode="before")
     def validate_password(cls, password: str) -> str:
@@ -42,7 +43,7 @@ class UserCreate(BaseModel):
             raise ValueError("Password must contain at least one number.")
         if not any(char in "@$!%*?&" for char in password):
             raise ValueError("Password must contain at least one special character.")
-        return AuthService.get_password_hash(password)
+        return password
 
     @field_validator("name", mode="before")
     def validate_name(cls, name: str) -> str:
@@ -58,5 +59,5 @@ class UserOut(BaseDBSchema):
     email: str
 
 
-class UserInDB(UserOut):
-    hashed_password: str
+class UserPermissionsOut(UserOut):
+    user_type_data: UserTypeOut

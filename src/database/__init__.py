@@ -1,1 +1,1 @@
-from src.database.models import users  # noqa
+from src.database.models import user_types, users  # noqa

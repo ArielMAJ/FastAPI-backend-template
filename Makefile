@@ -69,6 +69,38 @@ minor: ## Bump project version to next minor (feature release).
 major: ## Bump project version to next major (breaking change).
 	poetry version major
 
+.PHONY: generate-secret-key
+generate-secret-key: ## Generate a new secret key.
+	poetry run python -c 'import secrets; print(secrets.token_hex(32))'
+
+.PHONY: init-env
+init-env: ## Copy .env.example to .env and populate SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES.
+	@if [ -f .env ]; then \
+		echo "Error: .env already exists. Aborting."; \
+		exit 1; \
+	fi;
+
+	@cp .env.example .env
+	@sed -i '' -e '/^SECRET_KEY=/d' -e '/^ALGORITHM=/d' -e '/^ACCESS_TOKEN_EXPIRE_MINUTES=/d' .env
+
+	@SECRET_KEY=$$( \
+		if command -v python >/dev/null 2>&1; then \
+			python -c 'import secrets; print(secrets.token_hex(32))'; \
+		elif command -v node >/dev/null 2>&1; then \
+			node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"; \
+		elif command -v openssl >/dev/null 2>&1; then \
+			openssl rand -hex 32; \
+		fi \
+	); \
+	if [ -z "$$SECRET_KEY" ]; then \
+		echo "Error: Failed to generate SECRET_KEY. Aborting."; \
+		exit 1; \
+	fi; \
+	echo "SECRET_KEY=$$SECRET_KEY" >> .env
+
+	@echo "ALGORITHM=HS256" >> .env
+	@echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
+
 .PHONY: clean
 clean: ## Clean project's temporary files.
 	find . -name '__pycache__' -exec rm -rf {} +
