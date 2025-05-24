@@ -17,7 +17,9 @@ class ModelBase(DeclarativeBase):
     metadata = MetaData()
     session: AsyncSession
 
-    id: Mapped[int] = mapped_column(nullable=False, primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(
+        nullable=False, primary_key=True, index=True, autoincrement=True
+    )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True),
         default=datetime.datetime.now(datetime.UTC),
@@ -77,3 +79,8 @@ class ModelBase(DeclarativeBase):
 
     async def delete(self):
         await db.session.delete(self)
+
+    def __repr__(self) -> str:
+        attrs = {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
+        attrs_str = ", ".join(f"{k}={v!r}" for k, v in attrs.items())
+        return f"<{self.__class__.__name__}({attrs_str})>"

@@ -4,32 +4,40 @@ from typing import Annotated, Union
 import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-from passlib.context import CryptContext
+from loguru import logger
 
 from src.configs.envs import Config
 from src.database.models.users import User
-from src.exceptions.http_exceptions import CredentialsException
+from src.exceptions.http_exceptions import (
+    CredentialsException,
+    InvalidPermissionLevelException,
+)
 from src.schemas.auth import TokenData
+from src.utils.auth_util import get_password_hash, verify_password
+from src.utils.enums import UserTypeEnum
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 class AuthService:
     @staticmethod
     def verify_password(plain_password, hashed_password):
-        return pwd_context.verify(plain_password, hashed_password)
+        return verify_password(plain_password, hashed_password)
 
     @staticmethod
     def get_password_hash(password):
-        return pwd_context.hash(password)
+        return get_password_hash(password)
 
     @staticmethod
     async def authenticate_user(username: str, password: str):
+        logger.info(f"Authenticating user: {username=}")
         user: Union[User, None] = await User.get_by_email(username)
+        logger.info(f"{user=}")
         if not user:
+            logger.info(f"User not found: {username=}")
             return False
         if not AuthService.verify_password(password, user.password):
+            logger.info(f"Password mismatch for user: {username=}")
             return False
         return user
 
@@ -68,6 +76,19 @@ class AuthService:
     async def get_current_active_user(
         current_user: Annotated[User, Depends(get_current_user)],
     ):
-        if current_user.deleted_at:
+        if (
+            current_user.deleted_at
+            or current_user.is_blocked
+            or not current_user.is_active
+            or not current_user.user_type_data.can_login
+        ):
             raise CredentialsException()
+        return current_user
+
+    @staticmethod
+    async def is_admin(
+        current_user: Annotated[User, Depends(get_current_active_user)],
+    ):
+        if current_user.user_type_title != UserTypeEnum.ADMIN:
+            raise InvalidPermissionLevelException()
         return current_user
