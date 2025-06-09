@@ -32,10 +32,10 @@ class AuthService:
     async def authenticate_user(username: str, password: str):
         logger.info(f"Authenticating user: {username=}")
         user: Union[User, None] = await User.get_by_email(username)
-        logger.info(f"{user=}")
         if not user:
             logger.info(f"User not found: {username=}")
             return False
+        logger.info(f"{user.id=}")
         if not AuthService.verify_password(password, user.password):
             logger.info(f"Password mismatch for user: {username=}")
             return False

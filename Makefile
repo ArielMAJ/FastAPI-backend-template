@@ -21,9 +21,17 @@ install: ## Install Python package dependencies.
 test: ## Run automated tests.
 	ENVIRONMENT=test poetry run pytest --cov
 
+.PHONY: up
+up: ## Start all containers.
+	$(COMPOSE) -f ./docker-compose.yml up -d --force-recreate
+
+.PHONY: recreate
+recreate: ## Recreate all containers.
+	$(COMPOSE) -f ./docker-compose.yml up -d --force-recreate --build
+
 .PHONY: up-database
 up-database: ## Start database container.
-	$(COMPOSE) up -d postgres --force-recreate
+	$(COMPOSE) -f ./docker-compose.yml up -d database --force-recreate
 
 .PHONY: down
 down: ## Stop all containers.
@@ -80,8 +88,15 @@ init-env: ## Copy .env.example to .env and populate SECRET_KEY, ALGORITHM, ACCES
 		exit 1; \
 	fi;
 
+	@if [ -f .env.docker ]; then \
+		echo "Error: .env.docker already exists. Aborting."; \
+		exit 1; \
+	fi;
+
 	@cp .env.example .env
+	@cp .env.docker.example .env.docker
 	@sed -i '' -e '/^SECRET_KEY=/d' -e '/^ALGORITHM=/d' -e '/^ACCESS_TOKEN_EXPIRE_MINUTES=/d' .env
+	@sed -i '' -e '/^SECRET_KEY=/d' -e '/^ALGORITHM=/d' -e '/^ACCESS_TOKEN_EXPIRE_MINUTES=/d' .env.docker
 
 	@SECRET_KEY=$$( \
 		if command -v python >/dev/null 2>&1; then \
@@ -96,10 +111,12 @@ init-env: ## Copy .env.example to .env and populate SECRET_KEY, ALGORITHM, ACCES
 		echo "Error: Failed to generate SECRET_KEY. Aborting."; \
 		exit 1; \
 	fi; \
-	echo "SECRET_KEY=$$SECRET_KEY" >> .env
+	echo "SECRET_KEY=$$SECRET_KEY" | tee -a .env .env.docker > /dev/null
 
 	@echo "ALGORITHM=HS256" >> .env
 	@echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
+	@echo "ALGORITHM=HS256" >> .env.docker
+	@echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env.docker
 
 .PHONY: clean
 clean: ## Clean project's temporary files.
