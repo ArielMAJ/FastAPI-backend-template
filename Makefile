@@ -31,7 +31,7 @@ recreate: ## Recreate all containers.
 
 .PHONY: up-database
 up-database: ## Start database container.
-	$(COMPOSE) -f ./docker-compose.yml up -d database --force-recreate
+	$(COMPOSE) -f ./docker-compose.yml up -d sso-db --force-recreate
 
 .PHONY: down
 down: ## Stop all containers.
