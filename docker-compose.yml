@@ -10,7 +10,7 @@ services:
     ports:
       - "${SSO_PORT:-3001}:3000"
     depends_on:
-      - database
+      - sso-db
 
   sso-db:
     image: postgres:16.3
