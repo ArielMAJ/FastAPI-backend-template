@@ -15,7 +15,9 @@ class UserCreate(BaseModel):
         examples=["John Doe", "Jane Smith"],
     )
     email: EmailStr = Field(
-        ..., max_length=255, description="Email must be a valid email address"
+        ...,
+        max_length=255,
+        description="Email must be a valid email address",
     )
     password: str = Field(
         ...,
@@ -27,7 +29,7 @@ class UserCreate(BaseModel):
         examples=["P@ssw0rd", "S3cure!Password"],
     )
 
-    @field_validator("name", "password", mode="before")
+    @field_validator("name", "password", "email", mode="before")
     def strip_field(cls, field: str) -> str:
         return field.strip()
 
@@ -52,6 +54,10 @@ class UserCreate(BaseModel):
         if not all(char.isalpha() or char.isspace() for char in name):
             raise ValueError("Name must contain only letters and spaces")
         return name
+
+    @field_validator("email", mode="before")
+    def email_parser(cls, email: str) -> str:
+        return email.strip().lower()
 
 
 class UserOut(BaseDBSchema):
