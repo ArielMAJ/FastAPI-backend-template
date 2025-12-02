@@ -1,0 +1,4 @@
+# Force Vercel to use requirements.txt instead of pyproject.toml
+# See: https://github.com/vercel/vercel/issues/14041
+pyproject.toml
+poetry.lock
