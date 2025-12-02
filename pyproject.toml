@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-backend-template"
-version = "2.0.3"
+version = "2.0.4"
 description = "A FastAPI backend template."
 authors = ["ArielMAJ <ariel.maj@hotmail.com>"]
 readme = "README.md"
@@ -44,4 +44,5 @@ omit = [
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
 
